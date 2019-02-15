@@ -2,32 +2,60 @@ package com.example.douglasdeleon.lab6
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import android.net.Uri;
-import android.content.ContentResolver;
-import android.database.Cursor;
-import android.widget.ListView;
+import java.util.Collections
+import android.widget.ListView
+import kotlin.collections.ArrayList
+import android.widget.MediaController.MediaPlayerControl
+import android.os.IBinder;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.view.MenuItem;
+import android.view.View;
+import com.example.douglasdeleon.lab6.MusicService.MusicBinder
 
-class MainActivity : AppCompatActivity() {
 
-    private var songList: ArrayList<Song>? = null
-    private val songView: ListView? = null
+
+class MainActivity : AppCompatActivity(), MediaPlayerControl {
+
+    private var songList: ArrayList<Song> = ArrayList()
+    private val songView: ListView = findViewById(R.id.song_list)
+    private var musicSrv: MusicService = MusicService()
+    private val playIntent: Intent = Intent()
+    private var musicBound = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        var songView: ListView = findViewById(R.id.song_list)
-
-        songList = ArrayList()
-
         getSongList()
 
+        Collections.sort(songList) { a, b -> a.title.compareTo(b.title) }
+
+        val songAdt = SongAdapter(this@MainActivity, songList)
+        songView.adapter = songAdt
 
     }
-        fun getSongList() {
+
+    //connect to the service
+    private val musicConnection = object : ServiceConnection {
+
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            val binder = service as MusicBinder
+            //get service
+            musicSrv = binder.service
+            //pass list
+            musicSrv.setList(songList)
+            musicBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            musicBound = false
+        }
+    }
+
+    fun getSongList() {
         //retrieve song info
         val musicResolver = contentResolver
         val musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
@@ -46,5 +74,51 @@ class MainActivity : AppCompatActivity() {
                 songList.add(Song(thisId, thisTitle, thisArtist))
             } while (musicCursor.moveToNext())
         }
+
+        musicCursor.close()
+    }
+
+    override fun isPlaying(): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun canSeekForward(): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getDuration(): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun pause() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getBufferPercentage(): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun seekTo(pos: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getCurrentPosition(): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun canSeekBackward(): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun start() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getAudioSessionId(): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun canPause(): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
