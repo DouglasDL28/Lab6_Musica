@@ -12,8 +12,14 @@ import android.util.Log;
 import java.util.Random;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.media.AudioAttributes
+import android.media.AudioAttributes.CONTENT_TYPE_MUSIC
+import android.media.AudioAttributes.USAGE_MEDIA
 import android.provider.MediaStore
 import com.example.douglasdeleon.lab6.R.drawable.rand
+import android.media.AudioTrack
+
+
 
 
 
@@ -83,7 +89,11 @@ class MusicService : Service(), MediaPlayer.OnPreparedListener, MediaPlayer.OnEr
     fun initMusicPlayer() {
         //set player properties
         player.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK)
-        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+        player.setAudioAttributes(AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_MEDIA)
+            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+            .build())
 
         player.setOnPreparedListener(this@MusicService)
         player.setOnCompletionListener(this@MusicService)

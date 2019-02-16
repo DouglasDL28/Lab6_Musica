@@ -5,14 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.view.LayoutInflater
-import android.support.design.widget.CoordinatorLayout.Behavior.setTag
 import android.widget.TextView
 import android.widget.LinearLayout
-
-
-
-
-
 
 class SongAdapter (c: Context, theSongs: ArrayList<Song>) : BaseAdapter() {
 
